@@ -10,4 +10,8 @@ defmodule DarnDmap do
   def first_record_keys(path) do
     DarnDmap.Native.first_record_keys(path)
   end
+
+  def first_record(path) do
+    DarnDmap.Native.first_record(path)
+  end
 end

@@ -1,5 +1,7 @@
 use dmap::{DmapRecord, Record};
 use dmap::types::{DmapField, DmapScalar, DmapVec};
+use indexmap::map::IndexMap;
+use std::collections::HashMap;
 
 use rustler::{Encoder, Env, NifMap, NifResult, Term};
 
@@ -17,6 +19,20 @@ fn first_record_keys(path: String) -> NifResult<Vec<String>> {
         .map_err(|e| rustler::Error::Term(Box::new(e.to_string())))?;
 
     Ok(first_record.keys().into_iter().cloned().collect())
+}
+
+#[rustler::nif]
+fn first_record(path: String) -> NifResult<Vec<(String, String)>> {
+    let first_record: DmapRecord = DmapRecord::sniff_file(path)
+        .map_err(|e| rustler::Error::Term(Box::new(e.to_string())))?;
+    
+    let fields = first_record
+        .inner()
+        .iter()
+        .map(|(k, v)| (k.clone(), format!("{:?}", v)))
+        .collect();
+
+    Ok(fields)
 }
 
 // #[rustler::nif]
