@@ -1,0 +1,14 @@
+[package]
+name = "darndmap"
+version = "0.1.0"
+authors = ["Matt Caldwell"]
+edition = "2021"
+
+[lib]
+name = "darndmap"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+rustler = "0.37.4"
+darn-dmap = { git = "https://github.com/StoatPower/dmap.git", branch = "feature-gate-python-bindings" }
