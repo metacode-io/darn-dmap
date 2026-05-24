@@ -25,3 +25,6 @@ darn_dmap-*.tar
 
 # Rust binary artifacts
 /target/
+
+# Ignore example data
+/example_data/
