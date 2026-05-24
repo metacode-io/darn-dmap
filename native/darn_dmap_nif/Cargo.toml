@@ -1,11 +1,11 @@
 [package]
-name = "darndmap"
+name = "darn_dmap_nif"
 version = "0.1.0"
 authors = ["Matt Caldwell"]
 edition = "2021"
 
 [lib]
-name = "darndmap"
+name = "darn_dmap_nif"
 path = "src/lib.rs"
 crate-type = ["cdylib"]
 

@@ -8,7 +8,7 @@
 
 ```elixir
 defmodule DarnDmap do
-  use Rustler, otp_app: :darn_dmap, crate: "darndmap"
+  use Rustler, otp_app: :darn_dmap, crate: "darn_dmap_nif"
 
   # When your NIF is loaded, it will override this function.
   def add(_a, _b), do: :erlang.nif_error(:nif_not_loaded)

@@ -92,7 +92,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "darndmap"
+name = "darn_dmap_nif"
 version = "0.1.0"
 dependencies = [
  "darn-dmap",
