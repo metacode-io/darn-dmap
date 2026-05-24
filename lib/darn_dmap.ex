@@ -6,4 +6,8 @@ defmodule DarnDmap do
   def read_records(path) do
     DarnDmap.Native.read_records(path)
   end
+
+  def first_record_keys(path) do
+    DarnDmap.Native.first_record_keys(path)
+  end
 end

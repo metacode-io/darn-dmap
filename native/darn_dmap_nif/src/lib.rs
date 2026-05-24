@@ -11,6 +11,14 @@ fn read_records(path: String) -> NifResult<usize> {
     Ok(records.len())
 }
 
+#[rustler::nif]
+fn first_record_keys(path: String) -> NifResult<Vec<String>> {
+    let first_record: DmapRecord = dmap::DmapRecord::sniff_file(path)
+        .map_err(|e| rustler::Error::Term(Box::new(e.to_string())))?;
+
+    Ok(first_record.keys().into_iter().cloned().collect())
+}
+
 // #[rustler::nif]
 // fn read_file<'a>(env: Env<'a>, path: String) -> Result<Term<'a>, String> {
 //     let records = DmapRecord::read_file(path)
