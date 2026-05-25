@@ -26,12 +26,10 @@ darn_dmap-*.tar
 # Rust binary artifacts
 /target/
 
-# Ignore example data
+# Ignore example data and large SuperDARN data files
 /example_data/
+*.bz2
+*.rawacf
 
 # Ignore .iex start-up script for develop
 .iex.exs
-
-# Ignore large SuperDARN data files
-*.bz2
-*.rawacf
