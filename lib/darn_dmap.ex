@@ -14,4 +14,8 @@ defmodule DarnDmap do
   def first_record(path) do
     DarnDmap.Native.first_record(path)
   end
+
+  # def first_record_debug(path) do
+  #   DarnDmap.Native.first_record_debug(path)
+  # end
 end

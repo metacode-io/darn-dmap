@@ -8,4 +8,6 @@ defmodule DarnDmap.Native do
   def first_record_keys(_path), do: :erlang.nif_error(:nif_not_loaded)
 
   def first_record(_path), do: :erlang.nif_error(:nif_not_loaded)
+
+  # def first_record_debug(_path), do: :erlang.nif_error(:nif_not_loaded)
 end

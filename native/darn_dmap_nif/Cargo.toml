@@ -11,4 +11,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rustler = "0.37.4"
+ndarray = "0.16"
 darn-dmap = { git = "https://github.com/StoatPower/dmap.git", branch = "feature-gate-python-bindings" }
