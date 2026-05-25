@@ -1,18 +1,25 @@
-use std::collections::btree_map::Keys;
-
 use dmap::{DmapRecord, Record};
 use dmap::types::{DmapField, DmapScalar, DmapVec};
 
-use rustler::{Atom, Encoder, Env, Error, NifMap, NifResult, NifTaggedEnum, Term};
+use rustler::{Decoder, Encoder, Env, Error, NifResult, NifTaggedEnum, Term};
+
+
+
+#[derive(Debug, Clone, Copy)]
+enum NifSafeFloat<T> {
+    Finite(T),
+    Nil,
+}
+
 
 #[derive(Debug, NifTaggedEnum)]
-enum ExDmapField {
-    Vector(ExDmapVec),
-    Scalar(ExDmapScalar),
+enum NifDmapField {
+    Vector(NifDmapVec),
+    Scalar(NifDmapScalar),
 }
 
 #[derive(Debug, NifTaggedEnum)]
-enum ExDmapScalar {
+enum NifDmapScalar {
     Char(i8),
     Short(i16),
     Int(i32),
@@ -21,13 +28,13 @@ enum ExDmapScalar {
     Ushort(u16),
     Uint(u32),
     Ulong(u64),
-    Float(f64),
-    Double(f64),
+    Float(NifSafeFloat<f32>),
+    Double(NifSafeFloat<f64>),
     String(String)
 }
 
 #[derive(Debug, NifTaggedEnum)]
-enum ExDmapVec {
+enum NifDmapVec {
     Char(Vec<i8>),
     Short(Vec<i16>),
     Int(Vec<i32>),
@@ -36,101 +43,111 @@ enum ExDmapVec {
     Ushort(Vec<u16>),
     Uint(Vec<u32>),
     Ulong(Vec<u64>),
-    Float(Vec<f64>),
-    Double(Vec<f64>)
+    Float(Vec<NifSafeFloat<f32>>),
+    Double(Vec<NifSafeFloat<f64>>)
 }
 
-impl From<DmapField> for ExDmapField {
+impl From<f32> for NifSafeFloat<f32> {
+    fn from(value: f32) -> Self {
+        if value.is_finite() {
+            Self::Finite(value)
+        } else {
+            Self::Nil
+        }
+    }
+}
+
+impl From<f64> for NifSafeFloat<f64> {
+    fn from(value: f64) -> Self {
+        if value.is_finite() {
+            Self::Finite(value)
+        } else {
+            Self::Nil
+        }
+    }
+}
+
+impl From<DmapField> for NifDmapField {
     fn from(field: DmapField) -> Self {
         match field {
-            DmapField::Vector(v) => ExDmapField::Vector(v.into()),
-            DmapField::Scalar(s) => ExDmapField::Scalar(s.into()),
+            DmapField::Vector(v) => NifDmapField::Vector(v.into()),
+            DmapField::Scalar(s) => NifDmapField::Scalar(s.into()),
         }
     }
 }
 
-impl From<DmapScalar> for ExDmapScalar {
+impl From<DmapScalar> for NifDmapScalar {
     fn from(field: DmapScalar) -> Self {
         match field {
-            DmapScalar::Char(c) => ExDmapScalar::Char(c),
-            DmapScalar::Short(c) => ExDmapScalar::Short(c),
-            DmapScalar::Int(c) => ExDmapScalar::Int(c),
-            DmapScalar::Long(c) => ExDmapScalar::Long(c),
-            DmapScalar::Uchar(c) => ExDmapScalar::Uchar(c),
-            DmapScalar::Ushort(c) => ExDmapScalar::Ushort(c),
-            DmapScalar::Uint(c) => ExDmapScalar::Uint(c),
-            DmapScalar::Ulong(c) => ExDmapScalar::Ulong(c),
-            DmapScalar::Float(c) => ExDmapScalar::Float(c as f64),
-            DmapScalar::Double(c) => ExDmapScalar::Double(c),
-            DmapScalar::String(c) => ExDmapScalar::String(c)
+            DmapScalar::Char(c) => NifDmapScalar::Char(c),
+            DmapScalar::Short(c) => NifDmapScalar::Short(c),
+            DmapScalar::Int(c) => NifDmapScalar::Int(c),
+            DmapScalar::Long(c) => NifDmapScalar::Long(c),
+            DmapScalar::Uchar(c) => NifDmapScalar::Uchar(c),
+            DmapScalar::Ushort(c) => NifDmapScalar::Ushort(c),
+            DmapScalar::Uint(c) => NifDmapScalar::Uint(c),
+            DmapScalar::Ulong(c) => NifDmapScalar::Ulong(c),
+            DmapScalar::Float(c) => NifDmapScalar::Float(NifSafeFloat::from(c)),
+            DmapScalar::Double(c) => NifDmapScalar::Double(NifSafeFloat::from(c)),
+            DmapScalar::String(c) => NifDmapScalar::String(c)
         }
     }
 }
 
-impl From<DmapVec> for ExDmapVec {
+impl From<DmapVec> for NifDmapVec {
     fn from(field: DmapVec) -> Self {
         match field {
-            DmapVec::Char(c) => ExDmapVec::Char(c.into_iter().collect()),
-            DmapVec::Short(c) => ExDmapVec::Short(c.into_iter().collect()),
-            DmapVec::Int(c) => ExDmapVec::Int(c.into_iter().collect()),
-            DmapVec::Long(c) => ExDmapVec::Long(c.into_iter().collect()),
-            DmapVec::Uchar(c) => ExDmapVec::Uchar(c.into_iter().collect()),
-            DmapVec::Ushort(c) => ExDmapVec::Ushort(c.into_iter().collect()),
-            DmapVec::Uint(c) => ExDmapVec::Uint(c.into_iter().collect()),
-            DmapVec::Ulong(c) => ExDmapVec::Ulong(c.into_iter().collect()),
-            DmapVec::Float(c) => ExDmapVec::Float(c.iter().map(|v| *v as f64).collect()),
-            DmapVec::Double(c) => ExDmapVec::Double(c.into_iter().collect())
+            DmapVec::Char(c) => NifDmapVec::Char(c.into_iter().collect()),
+            DmapVec::Short(c) => NifDmapVec::Short(c.into_iter().collect()),
+            DmapVec::Int(c) => NifDmapVec::Int(c.into_iter().collect()),
+            DmapVec::Long(c) => NifDmapVec::Long(c.into_iter().collect()),
+            DmapVec::Uchar(c) => NifDmapVec::Uchar(c.into_iter().collect()),
+            DmapVec::Ushort(c) => NifDmapVec::Ushort(c.into_iter().collect()),
+            DmapVec::Uint(c) => NifDmapVec::Uint(c.into_iter().collect()),
+            DmapVec::Ulong(c) => NifDmapVec::Ulong(c.into_iter().collect()),
+            DmapVec::Float(c) => NifDmapVec::Float(c.into_iter().map(NifSafeFloat::from).collect()),
+            DmapVec::Double(c) => NifDmapVec::Double(c.into_iter().map(NifSafeFloat::from).collect())
         }
     }
 }
 
-mod atoms {
-    rustler::atoms! {
-        scalar,
-        vector,
-        char,
-        short,
-        int,
-        long,
-        uchar,
-        ushort,
-        uint,
-        ulong,
-        float,
-        double,
-        string
+impl Encoder for NifSafeFloat<f32> {
+    fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
+        match self {
+            Self::Finite(x) => x.encode(env),
+            Self::Nil => None::<f32>.encode(env),
+        }
     }
 }
 
-fn encode_scalar<'a>(env: Env<'a>, s: DmapScalar) -> Term<'a> {
-    match s {
-        DmapScalar::Char(x) => (atoms::scalar(), atoms::char(), x).encode(env),
-        DmapScalar::Short(x) => (atoms::scalar(), atoms::short(), x).encode(env),
-        DmapScalar::Int(x) => (atoms::scalar(), atoms::int(), x).encode(env),
-        DmapScalar::Long(x) => (atoms::scalar(), atoms::long(), x).encode(env),
-        DmapScalar::Uchar(x) => (atoms::scalar(), atoms::uchar(), x).encode(env),
-        DmapScalar::Ushort(x) => (atoms::scalar(), atoms::ushort(), x).encode(env),
-        DmapScalar::Uint(x) => (atoms::scalar(), atoms::uint(), x).encode(env),
-        DmapScalar::Ulong(x) => (atoms::scalar(), atoms::ulong(), x).encode(env),
-        DmapScalar::Float(x) => (atoms::scalar(), atoms::float(), x as f64).encode(env),
-        DmapScalar::Double(x) => (atoms::scalar(), atoms::double(), x).encode(env),
-        DmapScalar::String(x) => (atoms::scalar(), atoms::string(), x).encode(env),
+impl Encoder for NifSafeFloat<f64> {
+    fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
+        match self {
+            Self::Finite(x) => x.encode(env),
+            Self::Nil => None::<f64>.encode(env),
+        }
     }
 }
 
-fn encode_vector<'a>(env: Env<'a>, v: DmapVec) -> Term<'a> {
-    match v {
-        DmapVec::Char(x) => (atoms::vector(), atoms::char(), x.iter().cloned().collect::<Vec<_>>()).encode(env),
-        DmapVec::Short(x) => (atoms::vector(), atoms::short(), x.iter().cloned().collect::<Vec<_>>()).encode(env),
-        DmapVec::Int(x) => (atoms::vector(), atoms::int(), x.iter().cloned().collect::<Vec<_>>()).encode(env),
-        DmapVec::Long(x) => (atoms::vector(), atoms::long(), x.iter().cloned().collect::<Vec<_>>()).encode(env),
-        DmapVec::Uchar(x) => (atoms::vector(), atoms::uchar(), x.iter().cloned().collect::<Vec<_>>()).encode(env),
-        DmapVec::Ushort(x) => (atoms::vector(), atoms::ushort(), x.iter().cloned().collect::<Vec<_>>()).encode(env),
-        DmapVec::Uint(x) => (atoms::vector(), atoms::uint(), x.iter().cloned().collect::<Vec<_>>()).encode(env),
-        DmapVec::Ulong(x) => (atoms::vector(), atoms::ulong(), x.iter().cloned().collect::<Vec<_>>()).encode(env),
-        // DmapVec::Float(x) => (atoms::vector(), atoms::float(), x.iter().map(|v| *v as f64).collect::<Vec<f64>>()).encode(env),
-        DmapVec::Float(x) => (atoms::vector(), atoms::float(), x.iter().map(|v| v.to_string()).collect::<Vec<String>>()).encode(env),
-        DmapVec::Double(x) => (atoms::vector(), atoms::double(), x.iter().cloned().collect::<Vec<_>>()).encode(env),
+impl<'a> Decoder<'a> for NifSafeFloat<f32> {
+    fn decode(term: Term<'a>) -> Result<Self, Error> {
+        let value: Option<f32> = term.decode()?;
+
+        Ok(match value {
+            Some(x) => Self::from(x),
+            None => Self::Nil
+        })
+    }
+}
+
+impl<'a> Decoder<'a> for NifSafeFloat<f64> {
+    fn decode(term: Term<'a>) -> Result<Self, Error> {
+        let value: Option<f64> = term.decode()?;
+
+        Ok(match value {
+            Some(x) => Self::from(x),
+            None => Self::Nil,
+        })
     }
 }
 
@@ -151,24 +168,20 @@ fn first_record_keys(path: String) -> NifResult<Vec<String>> {
 }
 
 #[rustler::nif]
-fn first_record<'a>(env: Env<'a>, path: String) -> NifResult<Vec<(String, Term<'a>)>> {
+fn first_record<'a>(path: String) -> NifResult<Vec<(String, NifDmapField)>> {
     let first_record: DmapRecord = DmapRecord::sniff_file(path)
         .map_err(|e| Error::Term(Box::new(e.to_string())))?;
     
     let fields = first_record
         .inner()
-        .iter()
-        .map(|(k, v)| {
-            let term = match v.clone() {
-                DmapField::Vector(v) => encode_vector(env, v),
-                DmapField::Scalar(s) => encode_scalar(env, s),
-            };
-
-            (k.clone(), term)
+        .into_iter()
+        .map(|(name, field)| {
+            (name, field.into())
         })
         .collect();
 
     Ok(fields)
 }
+
 
 rustler::init!("Elixir.DarnDmap.Native");
