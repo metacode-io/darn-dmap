@@ -152,7 +152,7 @@ impl<'a> Decoder<'a> for NifSafeFloat<f64> {
 }
 
 #[rustler::nif]
-fn read_records(path: String) -> NifResult<usize> {
+fn count_records(path: String) -> NifResult<usize> {
     let records = dmap::DmapRecord::read_file(path)
         .map_err(|e| rustler::Error::Term(Box::new(e.to_string())))?;
 

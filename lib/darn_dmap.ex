@@ -3,8 +3,8 @@ defmodule DarnDmap do
   Documentation for `DarnDmap`.
   """
 
-  def read_records(path) do
-    DarnDmap.Native.read_records(path)
+  def count_records(path) do
+    DarnDmap.Native.count_records(path)
   end
 
   def first_record_keys(path) do
