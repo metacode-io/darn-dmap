@@ -63,7 +63,7 @@ macro_rules! read_nif {
             }
 
             #[rustler::nif]
-            pub fn [<sniff_ $name>](path: String) -> NifResult<HashMap<String, NifDmapField>> {
+            pub fn [<peek_ $name>](path: String) -> NifResult<HashMap<String, NifDmapField>> {
                 dmap::[<sniff_ $name>](&path)
                     .map_err(to_nif_error)
                     .map(|record| nif_record(record.inner()))
