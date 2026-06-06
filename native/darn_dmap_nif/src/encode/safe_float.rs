@@ -50,7 +50,7 @@ impl<'a> Decoder<'a> for NifSafeFloat<f32> {
 
         Ok(match value {
             Some(x) => Self::from(x),
-            None => Self::Nil
+            None => Self::Nil,
         })
     }
 }

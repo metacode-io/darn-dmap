@@ -1,6 +1,6 @@
+use crate::encode::{NifDmapScalar, NifDmapVec};
 use dmap::types::DmapField;
 use rustler::NifTaggedEnum;
-use crate::encode::{NifDmapScalar, NifDmapVec};
 
 #[derive(Debug, NifTaggedEnum)]
 pub enum NifDmapField {

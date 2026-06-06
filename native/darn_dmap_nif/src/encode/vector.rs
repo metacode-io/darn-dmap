@@ -1,6 +1,6 @@
+use crate::encode::NifSafeFloat;
 use dmap::types::DmapVec;
 use rustler::NifTaggedEnum;
-use crate::encode::NifSafeFloat;
 
 #[derive(Debug, NifTaggedEnum)]
 pub enum NifDmapVec {
@@ -13,7 +13,7 @@ pub enum NifDmapVec {
     Uint(Vec<u32>),
     Ulong(Vec<u64>),
     Float(Vec<NifSafeFloat<f32>>),
-    Double(Vec<NifSafeFloat<f64>>)
+    Double(Vec<NifSafeFloat<f64>>),
 }
 
 impl From<DmapVec> for NifDmapVec {
@@ -28,7 +28,9 @@ impl From<DmapVec> for NifDmapVec {
             DmapVec::Uint(c) => NifDmapVec::Uint(c.into_iter().collect()),
             DmapVec::Ulong(c) => NifDmapVec::Ulong(c.into_iter().collect()),
             DmapVec::Float(c) => NifDmapVec::Float(c.into_iter().map(NifSafeFloat::from).collect()),
-            DmapVec::Double(c) => NifDmapVec::Double(c.into_iter().map(NifSafeFloat::from).collect())
+            DmapVec::Double(c) => {
+                NifDmapVec::Double(c.into_iter().map(NifSafeFloat::from).collect())
+            }
         }
     }
 }

@@ -3,6 +3,11 @@ name = "darn_dmap_nif"
 version = "0.1.0"
 authors = ["Matt Caldwell"]
 edition = "2021"
+rust-version = "1.95.0"
+description = "SuperDARN DMAP file format I/O Rustler NIFs for Elixir"
+repository = "https://github.com/StoatPower/darn-dmap"
+keywords = ["SuperDARN", "Rustler", "Elixir"]
+categories = ["parser-implementations", "science"]
 
 [lib]
 name = "darn_dmap_nif"
@@ -11,5 +16,6 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rustler = "0.37.4"
-ndarray = "0.16"
 darn-dmap = { git = "https://github.com/StoatPower/dmap.git", branch = "feature-gate-python-bindings" }
+indexmap = "2"
+paste = "1"

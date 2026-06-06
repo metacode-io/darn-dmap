@@ -1,6 +1,6 @@
-use dmap::types::DmapScalar;
-use rustler:: NifTaggedEnum;
 use crate::encode::NifSafeFloat;
+use dmap::types::DmapScalar;
+use rustler::NifTaggedEnum;
 
 #[derive(Debug, NifTaggedEnum)]
 pub enum NifDmapScalar {
@@ -14,7 +14,7 @@ pub enum NifDmapScalar {
     Ulong(u64),
     Float(NifSafeFloat<f32>),
     Double(NifSafeFloat<f64>),
-    String(String)
+    String(String),
 }
 
 impl From<DmapScalar> for NifDmapScalar {
@@ -30,7 +30,7 @@ impl From<DmapScalar> for NifDmapScalar {
             DmapScalar::Ulong(c) => NifDmapScalar::Ulong(c),
             DmapScalar::Float(c) => NifDmapScalar::Float(NifSafeFloat::from(c)),
             DmapScalar::Double(c) => NifDmapScalar::Double(NifSafeFloat::from(c)),
-            DmapScalar::String(c) => NifDmapScalar::String(c)
+            DmapScalar::String(c) => NifDmapScalar::String(c),
         }
     }
 }
