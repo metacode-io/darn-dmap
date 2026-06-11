@@ -21,7 +21,8 @@ defmodule DarnDmap.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:rustler, "~> 0.37.3"}
+      {:rustler, "~> 0.36"},
+      {:nx, "~> 0.12"}
     ]
   end
 end
