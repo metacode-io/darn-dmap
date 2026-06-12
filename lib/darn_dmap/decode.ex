@@ -36,7 +36,7 @@ defmodule DarnDmap.Decode do
 
   defp add_time(record) do
     dt =
-      DateTime.new!(
+      NaiveDateTime.new!(
         Date.new!(
           record["time.yr"],
           record["time.mo"],
@@ -47,8 +47,7 @@ defmodule DarnDmap.Decode do
           record["time.mt"],
           record["time.sc"],
           {record["time.us"], 6}
-        ),
-        "Etc/UTC"
+        )
       )
 
     Map.put(record, "time", dt)
