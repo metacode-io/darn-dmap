@@ -5,9 +5,11 @@ defmodule DarnDmap.Decode do
   end
 
   def decode_record(record) do
-    Map.new(record, fn {key, field} ->
+    record
+    |> Map.new(fn {key, field} ->
       {key, decode_field(field)}
     end)
+    |> add_time()
   end
 
   defp decode_field({:scalar, {_type, value}}), do: value
@@ -29,5 +31,25 @@ defmodule DarnDmap.Decode do
   defp nx_type(:float), do: {:f, 32}
   defp nx_type(:double), do: {:f, 64}
   defp nx_type(type), do: type
+
+  defp add_time(record) do
+    dt =
+      DateTime.new!(
+        Date.new!(
+          record["time.yr"],
+          record["time.mo"],
+          record["time.dy"]
+        ),
+        Time.new!(
+          record["time.hr"],
+          record["time.mt"],
+          record["time.sc"],
+          {record["time.us"], 6}
+        ),
+        "Etc/UTC"
+      )
+
+    Map.put(record, "time", dt)
+  end
 
 end
