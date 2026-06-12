@@ -30,18 +30,18 @@ defmodule DarnDmap.Fitacf do
     |> Enum.zip()
     |> Enum.map(fn {rg, v, gs, p, w} ->
       %{
-        time: record["time"],         # synthesized DateTime
-        stid: record["stid"],         # station/radar id
-        beam: record["bmnum"],        # beam number
-        azimuth: record["bmazm"],     # beam azimuth
-        scan: record["scan"],         # scan flag
-        channel: record["channel"],   # stereo / channel info
-        tfreq: record["tfreq"],       # transmit frequency
-        num_gates: record["nrang"],   # number of range gates
-        first_range: record["frang"], # first range distance
-        range_sep: record["rsep"],    # range separation
-        xcf: record["xcf"],           # whether XCF data available
-        cp: record["cp"],             # control program id
+        time: record["time"],           # synthesized DateTime
+        stid: record["stid"],           # station/radar id
+        beam: record["bmnum"],          # beam number
+        azimuth: record["bmazm"],       # beam azimuth
+        scan: record["scan"],           # scan flag
+        channel: record["channel"],     # stereo / channel info
+        sky_noise: record["noise.sky"], # sky noise
+        tfreq: record["tfreq"],         # transmit frequency
+        num_gates: record["nrang"],     # number of range gates
+        first_range: record["frang"],   # first range distance
+        range_sep: record["rsep"],      # range separation
+        cp: record["cp"],               # control program id
         gate: rg,
         velocity: v,
         groundscatter: gs == 1,
