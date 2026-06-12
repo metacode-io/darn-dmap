@@ -22,7 +22,8 @@ defmodule DarnDmap.MixProject do
   defp deps do
     [
       {:rustler, "~> 0.36"},
-      {:nx, "~> 0.12"}
+      {:nx, "~> 0.12"},
+      {:explorer, "~> 0.11"}
     ]
   end
 end
