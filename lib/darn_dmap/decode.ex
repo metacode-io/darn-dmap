@@ -15,7 +15,9 @@ defmodule DarnDmap.Decode do
   defp decode_field({:scalar, {_type, value}}), do: value
 
   defp decode_field({:vector, {type, values}}) do
-    Nx.tensor(values, type: nx_type(type))
+    values
+    |> sanitize_vector_values(type)
+    |> Nx.tensor(type: nx_type(type))
   end
 
   defp decode_field(other), do: other
@@ -51,5 +53,15 @@ defmodule DarnDmap.Decode do
 
     Map.put(record, "time", dt)
   end
+
+  defp sanitize_vector_values(values, type) when type in [:float, :double] do
+    values
+    |> Enum.map(fn
+      nil -> :nan
+      value -> value
+    end)
+  end
+
+  defp sanitize_vector_values(values, _type), do: values
 
 end
