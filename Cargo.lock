@@ -77,8 +77,8 @@ checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
 
 [[package]]
 name = "darn-dmap"
-version = "0.7.0"
-source = "git+https://github.com/StoatPower/dmap.git?branch=feature-gate-python-bindings#cde02f94f4f3f40a3cd850dc494fc75261e3f759"
+version = "0.8.0"
+source = "git+https://github.com/StoatPower/dmap.git?branch=feature-gate-python-bindings#0a699ad0cb555640c09ca62d9434eabc35985989"
 dependencies = [
  "bzip2",
  "indexmap",

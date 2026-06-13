@@ -63,10 +63,25 @@ macro_rules! read_nif {
             }
 
             #[rustler::nif]
-            pub fn [<peek_ $name>](path: String) -> NifResult<HashMap<String, NifDmapField>> {
-                dmap::[<sniff_ $name>](&path)
-                    .map_err(to_nif_error)
+            pub fn [<read_ $name _by_indices>](path: String, indices: Vec<i32>) -> NifResult<Vec<HashMap<String, NifDmapField>>> {
+                let records = dmap::[<read_ $name _by_indices>](&path, &indices)
+                    .map_err(to_nif_error)?
+                    .into_iter()
                     .map(|record| nif_record(record.inner()))
+                    .collect();
+
+                Ok(records)
+            }
+
+            #[rustler::nif]
+            pub fn [<read_ $name _by_indices_lax>](path: String, indices: Vec<i32>) -> NifResult<(Vec<HashMap<String, NifDmapField>>, Option<usize>)> {
+                let (records, bad_byte) = dmap::[<read_ $name _by_indices_lax>](&path, &indices).map_err(to_nif_error)?;
+                let records = records
+                    .into_iter()
+                    .map(|record| nif_record(record.inner()))
+                    .collect();
+
+                Ok((records, bad_byte))
             }
 
             #[rustler::nif]
