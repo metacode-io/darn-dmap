@@ -1,11 +1,11 @@
 defmodule DarnDmap.Decode do
   alias DarnDmap.DmapError
 
-  @type decode_mode :: :elixir | :nx | false
+  @type decode_mode :: :elixir | :nx | :raw
 
   def decode_records!(records, opts \\ []) do
-    decode_mode = Keyword.get(opts, :decode, :elixir)
-    if not decode_mode do
+    decode_mode = Keyword.get(opts, :decode_mode, :elixir)
+    if decode_mode == :raw do
       records
     else
       records |> Enum.map(&do_decode_record!(&1, decode_mode))
@@ -28,7 +28,7 @@ defmodule DarnDmap.Decode do
     |> Nx.tensor(type: nx_type(type))
   end
 
-  defp decode_field!({:vector, {type, values}}, _decode_mode) do
+  defp decode_field!({:vector, {type, values}}, :elixir) do
     values |> sanitize_vector_values(type)
   end
 
