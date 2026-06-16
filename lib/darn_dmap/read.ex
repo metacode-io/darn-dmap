@@ -1,5 +1,15 @@
 defmodule DarnDmap.Read do
-  alias DarnDmap.{Decode, Native}
+  alias DarnDmap.{Decode, DmapError, Native}
+
+  def read(source, ftype, opts \\ []) do
+    {:ok, read!(source, ftype, opts)}
+  rescue
+    e in DmapError ->
+      {:error, e.reason}
+
+    e ->
+      {:error, e}
+  end
 
   def read!(source, ftype, opts \\ [])
 
@@ -22,7 +32,7 @@ defmodule DarnDmap.Read do
       {true, idxs} when is_list(idxs) ->
         Native.read_bytes_by_indices_lax(bytes, ftype, idxs)
     end
-    |> Decode.decode_records!(opts)
+    |> decode_read_result!(opts)
   end
 
   def read!(path, ftype, opts) when is_binary(path) do
@@ -42,10 +52,20 @@ defmodule DarnDmap.Read do
       {true, idxs} when is_list(idxs) ->
         Native.read_by_indices_lax(path, ftype, idxs)
     end
-    |> Decode.decode_records!(opts)
+    |> decode_read_result!(opts)
   end
 
-  def read_metadata!(path, ftype, opts \\ [decode_mode: false]) when is_binary(path) do
+  def read_metadata(path, ftype, opts \\ [decode_mode: :raw]) when is_binary(path) do
+    {:ok, read_metadata!(path, ftype, opts)}
+  rescue
+    e in DmapError ->
+      {:error, e.reason}
+
+    e ->
+      {:error, e}
+  end
+
+  def read_metadata!(path, ftype, opts \\ [decode_mode: :raw]) when is_binary(path) do
     indices = Keyword.get(opts, :indices, [])
     case indices do
       [] ->
@@ -54,6 +74,19 @@ defmodule DarnDmap.Read do
       idxs when is_list(idxs) ->
         Native.read_metadata_by_indices(path, ftype, idxs)
     end
-    |> Decode.decode_records!(opts)
+    |> decode_read_result!(opts)
+  end
+
+  defp decode_read_result!({records, bad_byte}, opts) do
+    records = Decode.decode_records!(records, opts)
+
+    case bad_byte do
+      nil -> records
+      byte -> {records, [bad_byte: byte]}
+    end
+  end
+
+  defp decode_read_result!(records, opts) when is_list(records) do
+    Decode.decode_records!(records, opts)
   end
 end
