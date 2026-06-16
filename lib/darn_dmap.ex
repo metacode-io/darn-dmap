@@ -5,9 +5,9 @@ defmodule DarnDmap do
 
   alias DarnDmap.Read
 
-  defdelegate read(path, ftype, opts \\ []), to: Read
+  defdelegate read(source, ftype, opts \\ []), to: Read
 
-  defdelegate read!(path, ftype, opts \\ []), to: Read
+  defdelegate read!(source, ftype, opts \\ []), to: Read
 
   defdelegate read_metadata(path, ftype, opts \\ []), to: Read
   defdelegate read_metadata!(path, ftype, opts \\ []), to: Read
