@@ -27,7 +27,7 @@ macro_rules! read_nif {
         paste! {
             #[rustler::nif]
             pub fn [<read_ $name>](path: String) -> NifResult<Vec<HashMap<String, NifDmapField>>> {
-                let records = <$record>::read_file(&path) //dmap::[<read_ $name>](&path)
+                let records = <$record>::read_file(&path)
                     .map_err(to_nif_error)?
                     .into_iter()
                     .map(|record| nif_record(record.inner()))
