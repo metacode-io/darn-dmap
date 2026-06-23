@@ -1,4 +1,11 @@
 use crate::encode::NifDmapField;
+use dmap::DmapRecord;
+use dmap::FitacfRecord;
+use dmap::GridRecord;
+use dmap::IqdatRecord;
+use dmap::MapRecord;
+use dmap::RawacfRecord;
+use dmap::SndRecord;
 use dmap::types::DmapField;
 use dmap::DmapError;
 use dmap::Record;
@@ -20,7 +27,7 @@ macro_rules! read_nif {
         paste! {
             #[rustler::nif]
             pub fn [<read_ $name>](path: String) -> NifResult<Vec<HashMap<String, NifDmapField>>> {
-                let records = dmap::[<read_ $name>](&path)
+                let records = <$record>::read_file(&path) //dmap::[<read_ $name>](&path)
                     .map_err(to_nif_error)?
                     .into_iter()
                     .map(|record| nif_record(record.inner()))
@@ -31,7 +38,7 @@ macro_rules! read_nif {
 
             #[rustler::nif]
             pub fn [<read_ $name _lax>](path: String) -> NifResult<(Vec<HashMap<String, NifDmapField>>, Option<usize>)> {
-                let (records, bad_byte) = dmap::[<read_ $name _lax>](&path).map_err(to_nif_error)?;
+                let (records, bad_byte) = <$record>::read_file_lax(&path).map_err(to_nif_error)?;
                 let records = records
                     .into_iter()
                     .map(|record| nif_record(record.inner()))
@@ -42,7 +49,7 @@ macro_rules! read_nif {
 
             #[rustler::nif]
             pub fn [<read_ $name _bytes>](bytes: Binary) -> NifResult<Vec<HashMap<String, NifDmapField>>> {
-                let records = dmap::[<read_ $name _bytes>](bytes.as_slice())
+                let records = <$record>::read_records(bytes.as_slice())
                     .map_err(to_nif_error)?
                     .into_iter()
                     .map(|record| nif_record(record.inner()))
@@ -53,7 +60,7 @@ macro_rules! read_nif {
 
             #[rustler::nif]
             pub fn [<read_ $name _bytes_lax>](bytes: Binary) -> NifResult<(Vec<HashMap<String, NifDmapField>>, Option<usize>)> {
-                let (records, bad_byte) = dmap::[<read_ $name _bytes_lax>](bytes.as_slice()).map_err(to_nif_error)?;
+                let (records, bad_byte) = <$record>::read_records_lax(bytes.as_slice()).map_err(to_nif_error)?;
                 let records = records
                     .into_iter()
                     .map(|record| nif_record(record.inner()))
@@ -64,7 +71,7 @@ macro_rules! read_nif {
 
             #[rustler::nif]
             pub fn [<read_ $name _by_indices>](path: String, indices: Vec<i32>) -> NifResult<Vec<HashMap<String, NifDmapField>>> {
-                let records = dmap::[<read_ $name _by_indices>](&path, &indices)
+                let records = <$record>::read_file_by_indices(&path, &indices)
                     .map_err(to_nif_error)?
                     .into_iter()
                     .map(|record| nif_record(record.inner()))
@@ -75,7 +82,7 @@ macro_rules! read_nif {
 
             #[rustler::nif]
             pub fn [<read_ $name _by_indices_lax>](path: String, indices: Vec<i32>) -> NifResult<(Vec<HashMap<String, NifDmapField>>, Option<usize>)> {
-                let (records, bad_byte) = dmap::[<read_ $name _by_indices_lax>](&path, &indices).map_err(to_nif_error)?;
+                let (records, bad_byte) = <$record>::read_file_by_indices_lax(&path, &indices).map_err(to_nif_error)?;
                 let records = records
                     .into_iter()
                     .map(|record| nif_record(record.inner()))
@@ -86,7 +93,7 @@ macro_rules! read_nif {
 
             #[rustler::nif]
             pub fn [<read_ $name _bytes_by_indices>](bytes: Binary, indices: Vec<i32>) -> NifResult<Vec<HashMap<String, NifDmapField>>> {
-                let records = dmap::[<read_ $name _bytes_by_indices>](bytes.as_slice(), &indices)
+                let records = <$record>::read_nth_records(bytes.as_slice(), &indices)
                     .map_err(to_nif_error)?
                     .into_iter()
                     .map(|record| nif_record(record.inner()))
@@ -97,7 +104,7 @@ macro_rules! read_nif {
 
             #[rustler::nif]
             pub fn [<read_ $name _bytes_by_indices_lax>](bytes: Binary, indices: Vec<i32>) -> NifResult<(Vec<HashMap<String, NifDmapField>>, Option<usize>)> {
-                let (records, bad_byte) = dmap::[<read_ $name _bytes_by_indices_lax>](bytes.as_slice(), &indices).map_err(to_nif_error)?;
+                let (records, bad_byte) = <$record>::read_nth_records_lax(bytes.as_slice(), &indices).map_err(to_nif_error)?;
                 let records = records
                     .into_iter()
                     .map(|record| nif_record(record.inner()))
@@ -108,7 +115,7 @@ macro_rules! read_nif {
 
             #[rustler::nif]
             pub fn [<read_ $name _metadata>](path: String) -> NifResult<Vec<HashMap<String, NifDmapField>>> {
-                let records = dmap::[<read_ $name _metadata>](&path)
+                let records = <$record>::read_file_metadata(&path)
                     .map_err(to_nif_error)?
                     .into_iter()
                     .map(nif_record)
@@ -119,7 +126,7 @@ macro_rules! read_nif {
 
             #[rustler::nif]
             pub fn [<read_ $name _metadata_by_indices>](path: String, indices: Vec<i32>) -> NifResult<Vec<HashMap<String, NifDmapField>>> {
-                let records = dmap::[<read_ $name _metadata_by_indices>](&path, &indices)
+                let records = <$record>::read_file_metadata_by_indices(&path, &indices)
                     .map_err(to_nif_error)?
                     .into_iter()
                     .map(nif_record)
