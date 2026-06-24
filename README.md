@@ -1,6 +1,6 @@
 # DarnDmap
 
-**TODO: Add description**
+:construction: **Currently under active development. Not ready for production use.** :warning:
 
 ## Installation
 
