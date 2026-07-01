@@ -36,3 +36,6 @@ darn_dmap-*.tar
 
 # Ignore .iex start-up script for develop
 .iex.exs
+
+# temp folder for various temp outputs
+/temp/

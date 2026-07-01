@@ -25,7 +25,7 @@ fn nif_record(record: IndexMap<String, DmapField>) -> HashMap<String, NifDmapFie
 macro_rules! read_nif {
     ($name:ident, $record:ty) => {
         paste! {
-            #[rustler::nif]
+            #[rustler::nif(schedule = "DirtyIo")]
             pub fn [<read_ $name>](path: String) -> NifResult<Vec<HashMap<String, NifDmapField>>> {
                 let records = <$record>::read_file(&path)
                     .map_err(to_nif_error)?
@@ -36,7 +36,7 @@ macro_rules! read_nif {
                 Ok(records)
             }
 
-            #[rustler::nif]
+            #[rustler::nif(schedule = "DirtyIo")]
             pub fn [<read_ $name _lax>](path: String) -> NifResult<(Vec<HashMap<String, NifDmapField>>, Option<usize>)> {
                 let (records, bad_byte) = <$record>::read_file_lax(&path).map_err(to_nif_error)?;
                 let records = records
@@ -47,7 +47,7 @@ macro_rules! read_nif {
                 Ok((records, bad_byte))
             }
 
-            #[rustler::nif]
+            #[rustler::nif(schedule = "DirtyCpu")]
             pub fn [<read_ $name _bytes>](bytes: Binary) -> NifResult<Vec<HashMap<String, NifDmapField>>> {
                 let records = <$record>::read_records(bytes.as_slice())
                     .map_err(to_nif_error)?
@@ -58,7 +58,7 @@ macro_rules! read_nif {
                 Ok(records)
             }
 
-            #[rustler::nif]
+            #[rustler::nif(schedule = "DirtyCpu")]
             pub fn [<read_ $name _bytes_lax>](bytes: Binary) -> NifResult<(Vec<HashMap<String, NifDmapField>>, Option<usize>)> {
                 let (records, bad_byte) = <$record>::read_records_lax(bytes.as_slice()).map_err(to_nif_error)?;
                 let records = records
@@ -69,7 +69,7 @@ macro_rules! read_nif {
                 Ok((records, bad_byte))
             }
 
-            #[rustler::nif]
+            #[rustler::nif(schedule = "DirtyIo")]
             pub fn [<read_ $name _by_indices>](path: String, indices: Vec<i32>) -> NifResult<Vec<HashMap<String, NifDmapField>>> {
                 let records = <$record>::read_file_by_indices(&path, &indices)
                     .map_err(to_nif_error)?
@@ -80,7 +80,7 @@ macro_rules! read_nif {
                 Ok(records)
             }
 
-            #[rustler::nif]
+            #[rustler::nif(schedule = "DirtyIo")]
             pub fn [<read_ $name _by_indices_lax>](path: String, indices: Vec<i32>) -> NifResult<(Vec<HashMap<String, NifDmapField>>, Option<usize>)> {
                 let (records, bad_byte) = <$record>::read_file_by_indices_lax(&path, &indices).map_err(to_nif_error)?;
                 let records = records
@@ -91,7 +91,7 @@ macro_rules! read_nif {
                 Ok((records, bad_byte))
             }
 
-            #[rustler::nif]
+            #[rustler::nif(schedule = "DirtyIo")]
             pub fn [<read_ $name _bytes_by_indices>](bytes: Binary, indices: Vec<i32>) -> NifResult<Vec<HashMap<String, NifDmapField>>> {
                 let records = <$record>::read_nth_records(bytes.as_slice(), &indices)
                     .map_err(to_nif_error)?
@@ -102,7 +102,7 @@ macro_rules! read_nif {
                 Ok(records)
             }
 
-            #[rustler::nif]
+            #[rustler::nif(schedule = "DirtyCpu")]
             pub fn [<read_ $name _bytes_by_indices_lax>](bytes: Binary, indices: Vec<i32>) -> NifResult<(Vec<HashMap<String, NifDmapField>>, Option<usize>)> {
                 let (records, bad_byte) = <$record>::read_nth_records_lax(bytes.as_slice(), &indices).map_err(to_nif_error)?;
                 let records = records
@@ -113,7 +113,7 @@ macro_rules! read_nif {
                 Ok((records, bad_byte))
             }
 
-            #[rustler::nif]
+            #[rustler::nif(schedule = "DirtyIo")]
             pub fn [<read_ $name _metadata>](path: String) -> NifResult<Vec<HashMap<String, NifDmapField>>> {
                 let records = <$record>::read_file_metadata(&path)
                     .map_err(to_nif_error)?
@@ -124,7 +124,7 @@ macro_rules! read_nif {
                 Ok(records)
             }
 
-            #[rustler::nif]
+            #[rustler::nif(schedule = "DirtyIo")]
             pub fn [<read_ $name _metadata_by_indices>](path: String, indices: Vec<i32>) -> NifResult<Vec<HashMap<String, NifDmapField>>> {
                 let records = <$record>::read_file_metadata_by_indices(&path, &indices)
                     .map_err(to_nif_error)?
