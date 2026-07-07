@@ -77,8 +77,9 @@ checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
 
 [[package]]
 name = "darn-dmap"
-version = "0.8.0"
-source = "git+https://github.com/StoatPower/dmap.git?branch=feature-gate-python-bindings#2b771ff7bb9195d6fb763072ce37c8f24b507162"
+version = "0.8.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b570cb69a5306d56f2a55599f99647e69d8fdc2fdd684641f705f7ca4f147420"
 dependencies = [
  "bzip2",
  "indexmap",
