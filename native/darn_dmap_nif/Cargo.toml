@@ -5,7 +5,7 @@ authors = ["Matt Caldwell"]
 edition = "2021"
 rust-version = "1.85.1"
 description = "SuperDARN DMAP file format I/O Rustler NIFs for Elixir"
-repository = "https://github.com/StoatPower/darn-dmap"
+repository = "https://github.com/metacode-io/darn-dmap"
 keywords = ["SuperDARN", "Rustler", "Elixir"]
 categories = ["parser-implementations", "science"]
 
