@@ -5,7 +5,6 @@ defmodule DarnDmap.Native do
     otp_app: :darn_dmap,
     crate: :darn_dmap_nif
 
-
   read_nif(:iqdat)
   read_nif(:rawacf)
   read_nif(:fitacf)
@@ -13,5 +12,4 @@ defmodule DarnDmap.Native do
   read_nif(:map)
   read_nif(:snd)
   read_nif(:dmap)
-
 end

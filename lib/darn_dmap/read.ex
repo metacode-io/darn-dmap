@@ -67,6 +67,7 @@ defmodule DarnDmap.Read do
 
   def read_metadata!(path, ftype, opts \\ [decode_mode: :raw]) when is_binary(path) do
     indices = Keyword.get(opts, :indices, [])
+
     case indices do
       [] ->
         Native.read_metadata(path, ftype)

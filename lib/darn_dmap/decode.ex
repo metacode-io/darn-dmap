@@ -5,6 +5,7 @@ defmodule DarnDmap.Decode do
 
   def decode_records!(records, opts \\ []) do
     decode_mode = Keyword.get(opts, :decode_mode, :elixir)
+
     if decode_mode == :raw do
       records
     else
@@ -77,5 +78,4 @@ defmodule DarnDmap.Decode do
   end
 
   defp sanitize_vector_values(values, _type), do: values
-
 end

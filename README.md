@@ -8,7 +8,9 @@ Elixir bindings for reading SuperDARN DMAP data using the Rust
 ## Features
 
 - Read SuperDARN DMAP files from disk or memory
+- Automatically reads `.bz2`-compressed DMAP files
 - Supports FITACF, RAWACF, IQDAT, GRID, MAP, SND, and generic DMAP records
+- Automatically recognizes record variants (e.g. FITEX, FITACF, FITACF3) and decodes them into a common representation
 - Supports indexed reads for efficient random access
 - Decode vectors as Elixir lists, `Nx.Tensor` values, or raw tagged fields
 - Native Rust implementation via Rustler
@@ -40,12 +42,24 @@ mix deps.get
 
 ## Usage
 
+> The record type (`:fitacf`, `:grid`, etc.) identifies the logical data product rather than a specific on-disk version. For example, `:fitacf` can be used to read FITEX, FITACF, FITACF2, or FITACF3 files.
+
+Read all records from a compressed FITACF3 file:
+
+```elixir
+{:ok, records} =
+  DarnDmap.read(
+    "/path/to/20150505.2201.bks.fitacf3.bz2",
+    :fitacf
+  )
+```
+
 Read all records from a FITACF file:
 
 ```elixir
 {:ok, records} =
   DarnDmap.read(
-    "/path/to/file.fitacf",
+    "/path/to/20150505.2201.bks.fitacf",
     :fitacf
   )
 ```
@@ -55,7 +69,7 @@ The explicit path source form is also supported:
 ```elixir
 {:ok, records} =
   DarnDmap.read(
-    {:path, "/path/to/file.fitacf"},
+    {:path, "/path/to/20150505.2201.bks.fitacf"},
     :fitacf
   )
 ```
@@ -63,7 +77,7 @@ The explicit path source form is also supported:
 Read records directly from bytes:
 
 ```elixir
-bytes = File.read!("/path/to/file.fitacf")
+bytes = File.read!("/path/to/20150505.2201.bks.fitacf")
 
 {:ok, records} =
   DarnDmap.read(
@@ -77,7 +91,7 @@ Use the raising variant when failure should raise:
 ```elixir
 records =
   DarnDmap.read!(
-    "/path/to/file.fitacf",
+    "/path/to/20150505.2201.bks.fitacf",
     :fitacf
   )
 ```
@@ -87,7 +101,7 @@ Read selected records by zero-based index:
 ```elixir
 {:ok, records} =
   DarnDmap.read(
-    "/path/to/file.fitacf",
+    "/path/to/20150505.2201.bks.fitacf",
     :fitacf,
     indices: [0, 10, 25]
   )
@@ -98,7 +112,7 @@ Decode vector fields as `Nx.Tensor` values:
 ```elixir
 {:ok, records} =
   DarnDmap.read(
-    "/path/to/file.fitacf",
+    "/path/to/20150505.2201.bks.fitacf",
     :fitacf,
     decode_mode: :nx
   )
@@ -109,7 +123,7 @@ Return the raw tagged DMAP representation:
 ```elixir
 {:ok, records} =
   DarnDmap.read(
-    "/path/to/file.fitacf",
+    "/path/to/20150505.2201.bks.fitacf",
     :fitacf,
     decode_mode: :raw
   )
@@ -120,7 +134,7 @@ Perform a lax read and report the first unreadable byte position:
 ```elixir
 {:ok, {records, bad_byte: byte_offset}} =
   DarnDmap.read(
-    "/path/to/file.fitacf",
+    "/path/to/20150505.2201.bks.fitacf",
     :fitacf,
     lax?: true
   )
@@ -131,7 +145,7 @@ When no unreadable byte is encountered, a lax read returns the records directly:
 ```elixir
 {:ok, records} =
   DarnDmap.read(
-    "/path/to/file.fitacf",
+    "/path/to/20150505.2201.bks.fitacf",
     :fitacf,
     lax?: true
   )

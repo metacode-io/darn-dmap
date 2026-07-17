@@ -1,5 +1,4 @@
 defmodule DarnDmap.Native.ReadNif do
-
   defmacro read_nif(ftype) do
     specs = %{
       read: :"read_#{ftype}",
@@ -20,11 +19,20 @@ defmodule DarnDmap.Native.ReadNif do
       defp unquote(specs.read_bytes)(_bytes), do: :erlang.nif_error(:nif_not_loaded)
       defp unquote(specs.read_bytes_lax)(_bytes), do: :erlang.nif_error(:nif_not_loaded)
       defp unquote(specs.read_by_indices)(_path, _indices), do: :erlang.nif_error(:nif_not_loaded)
-      defp unquote(specs.read_by_indices_lax)(_path, _indices), do: :erlang.nif_error(:nif_not_loaded)
-      defp unquote(specs.read_bytes_by_indices)(_bytes, _indices), do: :erlang.nif_error(:nif_not_loaded)
-      defp unquote(specs.read_bytes_by_indices_lax)(_bytes, _indices), do: :erlang.nif_error(:nif_not_loaded)
+
+      defp unquote(specs.read_by_indices_lax)(_path, _indices),
+        do: :erlang.nif_error(:nif_not_loaded)
+
+      defp unquote(specs.read_bytes_by_indices)(_bytes, _indices),
+        do: :erlang.nif_error(:nif_not_loaded)
+
+      defp unquote(specs.read_bytes_by_indices_lax)(_bytes, _indices),
+        do: :erlang.nif_error(:nif_not_loaded)
+
       defp unquote(specs.read_metadata)(_path), do: :erlang.nif_error(:nif_not_loaded)
-      defp unquote(specs.read_metadata_by_indices)(_path, _indices), do: :erlang.nif_error(:nif_not_loaded)
+
+      defp unquote(specs.read_metadata_by_indices)(_path, _indices),
+        do: :erlang.nif_error(:nif_not_loaded)
 
       def read(path, unquote(ftype)), do: unquote(specs.read)(path)
       def read_lax(path, unquote(ftype)), do: unquote(specs.read_lax)(path)
@@ -49,7 +57,5 @@ defmodule DarnDmap.Native.ReadNif do
       def read_metadata_by_indices(path, unquote(ftype), indices),
         do: unquote(specs.read_metadata_by_indices)(path, indices)
     end
-
   end
-
 end
