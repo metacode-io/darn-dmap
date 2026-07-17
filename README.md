@@ -1,5 +1,9 @@
 # DarnDmap
 
+[![Hex.pm](https://img.shields.io/hexpm/v/darn_dmap.svg)](https://hex.pm/packages/darn_dmap)
+[![Hex Docs](https://img.shields.io/badge/docs-hexdocs-blue.svg)](https://hexdocs.pm/darn_dmap)
+[![License](https://img.shields.io/hexpm/l/darn_dmap.svg)](LICENSE)
+
 Elixir bindings for reading SuperDARN DMAP data using the Rust
 [`darn-dmap`](https://crates.io/crates/darn-dmap) library.
 
