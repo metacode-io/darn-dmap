@@ -18,7 +18,7 @@ defmodule DarnDmap.Decode do
     |> Map.new(fn {key, field} ->
       {key, decode_field!(field, decode_mode)}
     end)
-    |> add_time!()
+    |> maybe_add_time!()
   end
 
   defp decode_field!({:scalar, {_type, value}}, _decode_mode), do: value
@@ -49,24 +49,39 @@ defmodule DarnDmap.Decode do
   defp nx_type(:double), do: {:f, 64}
   defp nx_type(type), do: type
 
-  defp add_time!(record) do
-    dt =
-      DateTime.new!(
-        Date.new!(
-          record["time.yr"],
-          record["time.mo"],
-          record["time.dy"]
-        ),
-        Time.new!(
-          record["time.hr"],
-          record["time.mt"],
-          record["time.sc"],
-          {record["time.us"], 6}
-        ),
-        "Etc/UTC"
+  defp maybe_add_time!(record) do
+    required_keys =
+      ~w(
+        time.yr
+        time.mo
+        time.dy
+        time.hr
+        time.mt
+        time.sc
       )
 
-    Map.put(record, "time", dt)
+    if Enum.all?(required_keys, &Map.has_key?(record, &1)) do
+      Map.put(record, "time", build_time!(record))
+    else
+      record
+    end
+  end
+
+  defp build_time!(record) do
+    DateTime.new!(
+      Date.new!(
+        record["time.yr"],
+        record["time.mo"],
+        record["time.dy"]
+      ),
+      Time.new!(
+        record["time.hr"],
+        record["time.mt"],
+        record["time.sc"],
+        {Map.get(record, "time.us", 0), 6}
+      ),
+      "Etc/UTC"
+    )
   end
 
   defp sanitize_vector_values(values, type) when type in [:float, :double] do
