@@ -1,4 +1,6 @@
 defmodule DarnDmap.Native.ReadNif do
+  @moduledoc false
+
   defmacro read_nif(ftype) do
     specs = %{
       read: :"read_#{ftype}",

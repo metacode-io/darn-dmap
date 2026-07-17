@@ -1,4 +1,13 @@
 defmodule DarnDmap.Decode do
+  @moduledoc """
+  Utilities for decoding native DMAP values into Elixir representations.
+
+  Depending on the selected decode mode, records may be decoded into ordinary
+  Elixir values, `Nx.Tensor` values, or left in their raw tagged representation.
+  This module also performs a small amount of post-processing, such as
+  constructing convenience timestamp fields when applicable.
+  """
+
   alias DarnDmap.DmapError
 
   @type decode_mode :: :elixir | :nx | :raw

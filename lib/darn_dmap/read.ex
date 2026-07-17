@@ -1,4 +1,12 @@
 defmodule DarnDmap.Read do
+  @moduledoc """
+  Internal implementation of the public read API.
+
+  This module validates read options, dispatches to the native NIF,
+  and performs post-processing such as record decoding and timestamp
+  synthesis before returning results to callers.
+  """
+
   alias DarnDmap.{Decode, DmapError, Native}
 
   def read(source, ftype, opts \\ []) do

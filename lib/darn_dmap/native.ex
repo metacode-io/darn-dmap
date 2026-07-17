@@ -1,4 +1,6 @@
 defmodule DarnDmap.Native do
+  @moduledoc false
+
   import DarnDmap.Native.ReadNif
 
   use Rustler,
